@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 /// <summary>
@@ -18,6 +19,10 @@ public class C4_BoatFeature : MonoBehaviour
     public int needGageStackToMove;
     public int needGageStackToShot;
     public int moveRange;
+    
+    public Image imgHPbar;
+    public Image imgGageWhite;
+    public Image imgGageYellow;
 
     [System.NonSerialized]
     public int stackCount;
@@ -36,8 +41,15 @@ public class C4_BoatFeature : MonoBehaviour
 
     void Update()
     {
+        
         gageUp();
         stackCount = gage / oneGageStack;
+
+        imgGageWhite.fillAmount = (float) gage / fullGage;
+        imgGageYellow.fillAmount = (float) stackCount / numOfStack;
+        imgHPbar.fillAmount = (float)hp / fullHP;
+
+        
     }   
 
     /* 행동을 하였을 때 gageStack만큼 gage를 감소시키는 함수 */
