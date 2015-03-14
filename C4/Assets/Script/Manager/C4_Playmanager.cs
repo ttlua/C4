@@ -51,14 +51,23 @@ public class C4_PlayManager : MonoBehaviour, C4_IntInitInstance{
     [System.NonSerialized]
     public GameObject selectedBoat;
     C4_Player character;
+    C4_BoatFeature boatFeature;
 
     bool isAim;
 
     /* 조준하고 있는 방향으로 회전하고 UI를 출력할 함수 */
     void aiming(Vector3 clickPosition)
     {
+        hideMoveUI();
+        float distance = Vector3.Distance(selectedBoat.transform.position, clickPosition);
         Vector3 aimDirection = (selectedBoat.transform.position - clickPosition).normalized;
         aimDirection.y = 0;
+        character.GetComponent<C4_BoatFeature>().aimUI.transform.position = selectedBoat.transform.position;
+        character.GetComponent<C4_BoatFeature>().aimUI.transform.rotation = Quaternion.LookRotation(aimDirection);
+        character.GetComponent<C4_BoatFeature>().aimUI.transform.localScale = new Vector3(distance, 1, 1);
+
+        character.GetComponent<C4_BoatFeature>().aimUI.fillAmount = 1;
+        
         character.startTurn(clickPosition);
     }
 
@@ -66,6 +75,7 @@ public class C4_PlayManager : MonoBehaviour, C4_IntInitInstance{
     /* 발포하고 상태를 초기화할 함수 */
     void orderShot(Vector3 shotDirection)
     {
+        character.GetComponent<C4_BoatFeature>().aimUI.fillAmount = 0;
         character.shot(shotDirection);
         activeDone();
     }
@@ -92,8 +102,53 @@ public class C4_PlayManager : MonoBehaviour, C4_IntInitInstance{
     {
         isAim = false;
         character = null;
+        hideMoveUI(); // selectedBoat 초기화전에 moveUI 끔
         selectedBoat = null;
     }
+
+    /* moveUI를 보여주는 함수 */
+    void showMoveUI()
+    {
+        boatFeature = selectedBoat.GetComponent<C4_BoatFeature>();
+        for (int i = 0; i < boatFeature.moveUI.Length; i++)
+        {
+            boatFeature.moveUI[i].transform.localScale = new Vector3(boatFeature.moveRange * (i+1), (boatFeature.moveRange * (i+1))/ 2, 1);
+        }
+        
+        switch (boatFeature.stackCount)
+        {
+            case 0:
+                boatFeature.moveUI[0].fillAmount = 0;
+                boatFeature.moveUI[1].fillAmount = 0;
+                boatFeature.moveUI[2].fillAmount = 0;
+                break;
+            case 1:
+                boatFeature.moveUI[0].fillAmount = 1;
+                boatFeature.moveUI[1].fillAmount = 0;
+                boatFeature.moveUI[2].fillAmount = 0;
+                break;
+            case 2:
+                boatFeature.moveUI[0].fillAmount = 1;
+                boatFeature.moveUI[1].fillAmount = 1;
+                boatFeature.moveUI[2].fillAmount = 0;
+                break;
+            case 3:
+                boatFeature.moveUI[0].fillAmount = 1;
+                boatFeature.moveUI[1].fillAmount = 1;
+                boatFeature.moveUI[2].fillAmount = 1;
+                break;
+        }
+    }
+
+    /* MoveUI를 감추는 함수 */
+    void hideMoveUI()
+    {
+        boatFeature = selectedBoat.GetComponent<C4_BoatFeature>();
+        for (int i = 0; i < boatFeature.moveUI.Length; i++)
+        {
+            boatFeature.moveUI[i].fillAmount = 0;
+        }
+    }        
 
     /* InputManager로부터 전해받은 InputData를 분석하고 행동을 명령하는 함수 */
     public void dispatchData(InputData inputData)
@@ -101,6 +156,7 @@ public class C4_PlayManager : MonoBehaviour, C4_IntInitInstance{
 
         if (selectedBoat != null)
         {
+            showMoveUI(); // 배가 선택되었을 때 MoveUI를 보여줌
             if (inputData.keyState == InputData.KeyState.Down)
             {
                 if (isAim)
@@ -127,6 +183,7 @@ public class C4_PlayManager : MonoBehaviour, C4_IntInitInstance{
                 }
                 else
                 {
+
                     if (inputData.clickObjectID.type == ObjectID.Type.Water)
                     {
                         if(inputData.clickPosition == inputData.dragPosition)

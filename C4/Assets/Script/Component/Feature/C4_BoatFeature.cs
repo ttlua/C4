@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 /// <summary>
@@ -18,7 +19,9 @@ public class C4_BoatFeature : MonoBehaviour
     public int needGageStackToMove;
     public int needGageStackToShot;
     public int moveRange;
-
+    public Image[] moveUI;
+    public Image aimUI;
+    
     [System.NonSerialized]
     public int stackCount;
     [System.NonSerialized]
@@ -54,6 +57,6 @@ public class C4_BoatFeature : MonoBehaviour
         {
             gage++;
         }
-
     }
+   
 }
