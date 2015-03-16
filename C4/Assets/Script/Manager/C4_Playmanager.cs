@@ -14,6 +14,7 @@ using System.Collections;
 
 public class C4_PlayManager : MonoBehaviour, C4_IntInitInstance{
 
+    
     private static C4_PlayManager _instance;
     public static C4_PlayManager Instance
     {
@@ -59,12 +60,16 @@ public class C4_PlayManager : MonoBehaviour, C4_IntInitInstance{
     void aiming(Vector3 clickPosition)
     {
         hideMoveUI();
+
         float distance = Vector3.Distance(selectedBoat.transform.position, clickPosition);
         Vector3 aimDirection = (selectedBoat.transform.position - clickPosition).normalized;
         aimDirection.y = 0;
+        
+        
         character.GetComponent<C4_BoatFeature>().aimUI.transform.position = selectedBoat.transform.position;
-        character.GetComponent<C4_BoatFeature>().aimUI.transform.rotation = Quaternion.LookRotation(aimDirection);
-        character.GetComponent<C4_BoatFeature>().aimUI.transform.localScale = new Vector3(distance, 1, 1);
+        character.GetComponent<C4_BoatFeature>().aimUI.transform.rotation = Quaternion.LookRotation(-aimDirection);
+        character.GetComponent<C4_BoatFeature>().aimUI.transform.Rotate(Vector3.right,90);
+        character.GetComponent<C4_BoatFeature>().aimUI.transform.localScale = new Vector3(1, distance, 1);
 
         character.GetComponent<C4_BoatFeature>().aimUI.fillAmount = 1;
         
@@ -112,7 +117,9 @@ public class C4_PlayManager : MonoBehaviour, C4_IntInitInstance{
         boatFeature = selectedBoat.GetComponent<C4_BoatFeature>();
         for (int i = 0; i < boatFeature.moveUI.Length; i++)
         {
+            boatFeature.moveUI[i].transform.position = selectedBoat.transform.position;
             boatFeature.moveUI[i].transform.localScale = new Vector3(boatFeature.moveRange * (i+1), (boatFeature.moveRange * (i+1))/ 2, 1);
+            
         }
         
         switch (boatFeature.stackCount)

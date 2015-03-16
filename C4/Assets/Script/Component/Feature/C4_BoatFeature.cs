@@ -21,7 +21,6 @@ public class C4_BoatFeature : MonoBehaviour
     public int moveRange;
     public Image[] moveUI;
     public Image aimUI;
-    
     [System.NonSerialized]
     public int stackCount;
     [System.NonSerialized]
